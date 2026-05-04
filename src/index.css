@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #0b0b0f;
+  color: #eaeaea;
+  font-family: "Cormorant Garamond", serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(198, 168, 91, 0.35);
+  color: #fff7df;
+}
+
+@layer components {
+  .section-frame {
+    @apply relative mx-auto w-full max-w-6xl px-6 py-20 md:px-10 md:py-28;
+  }
+
+  .panel {
+    @apply rounded-[2rem] border border-gold/15 bg-white/[0.03] backdrop-blur-sm;
+  }
+
+  .gold-label {
+    @apply font-heading text-xs uppercase tracking-[0.45em] text-gold/80 md:text-sm;
+  }
+
+  .glow-line {
+    @apply h-px w-24 bg-gradient-to-r from-transparent via-gold/70 to-transparent;
+  }
+}
