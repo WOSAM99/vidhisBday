@@ -71,7 +71,7 @@ export default function SealGate({ onComplete }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          The Traitors Castle Invite
+          Vidhi's Castle
         </motion.p>
 
         <motion.h1
@@ -89,7 +89,7 @@ export default function SealGate({ onComplete }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.24, duration: 0.9 }}
         >
-          Only those who keep the pact may enter the hall.
+          Only those who keep the pact may enter Vidhi's hall.
         </motion.p>
 
         <motion.div

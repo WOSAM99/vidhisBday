@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 
 const lines = [
+  "Within Vidhi's Castle, not every smile is loyal...",
   "Among you hide traitors...",
   "Trust will be tested...",
   "Every glance may conceal a scheme...",

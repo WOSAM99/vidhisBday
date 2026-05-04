@@ -56,8 +56,8 @@ export default function RSVP() {
                 Answer The Summons
               </h2>
               <p className="mt-8 text-2xl leading-relaxed text-bone/78">
-                Declare your loyalty, leave your details, and await the final
-                revelation.
+                Declare your loyalty, leave your details, and await your
+                summons to Vidhi's Castle.
               </p>
             </div>
 

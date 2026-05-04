@@ -43,7 +43,7 @@ export default function Countdown() {
           <div className="flex flex-col items-center text-center">
             <p className="gold-label">The Countdown</p>
             <h2 className="mt-5 font-heading text-4xl uppercase tracking-[0.14em] text-bone md:text-5xl">
-              The Castle Opens Soon
+              Vidhi's Castle Opens Soon
             </h2>
           </div>
 

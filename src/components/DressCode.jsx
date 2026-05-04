@@ -17,7 +17,7 @@ export default function DressCode() {
           </h2>
           <p className="mx-auto mt-8 max-w-3xl text-2xl leading-relaxed text-bone/78 md:text-3xl">
             Think candlelit corridors, velvet confidence, and a touch of
-            treachery worthy of the grand hall.
+            treachery worthy of Vidhi's grand hall.
           </p>
 
           <div className="mt-12 grid gap-4 md:grid-cols-3">
