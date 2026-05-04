@@ -1,75 +1,106 @@
+import { useState } from "react";
 import { motion } from "motion/react";
-import CastleScene from "./CastleScene";
+import CastleFootsteps from "./CastleFootsteps";
 
 export default function Hero() {
+  const [started, setStarted] = useState(false);
+
   return (
-    <section className="relative flex min-h-screen items-center pt-6 md:pt-0">
-      <div className="section-frame">
-        <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-          <motion.div
-            className="panel order-1 relative min-h-[22rem] overflow-hidden border-gold/25 shadow-[0_30px_80px_rgba(0,0,0,0.45)] md:min-h-[28rem] lg:order-2 lg:min-h-[36rem]"
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.9 }}
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(198,168,91,0.14), rgba(11,11,15,0.62)), radial-gradient(circle at 50% 8%, rgba(198,168,91,0.28), transparent 28%), linear-gradient(180deg, #17171f 0%, #0b0b0f 100%)",
-            }}
+    <section className="relative flex min-h-screen items-end">
+      <CastleFootsteps
+        targetXRatio={0.5}
+        targetYRatio={0.68}
+        onTrailStart={() => setStarted(true)}
+      />
+
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,11,15,0.16),rgba(11,11,15,0.45)_45%,rgba(11,11,15,0.9)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,235,180,0.12),transparent_22%),linear-gradient(180deg,transparent_0%,rgba(11,11,15,0.2)_50%,rgba(11,11,15,0.86)_100%)]" />
+
+      <div className="section-frame relative z-10 flex min-h-screen items-end pb-14 md:pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9 }}
+          className="w-full max-w-3xl"
+        >
+          <motion.p
+            className="gold-label"
+            animate={{ opacity: started ? 1 : 0.82 }}
           >
-            <motion.div
-              className="absolute left-1/2 top-8 h-32 w-32 -translate-x-1/2 rounded-full bg-gold/20 blur-3xl md:top-10 md:h-40 md:w-40"
-              animate={{ opacity: [0.42, 0.72, 0.42] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <CastleScene />
-            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black via-black/85 to-transparent" />
-            <div className="absolute inset-x-0 top-[28%] h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-
-            <div className="absolute left-4 top-4 rounded-full border border-gold/20 bg-black/30 px-4 py-2 backdrop-blur-sm md:left-6 md:top-6">
-              <p className="font-heading text-[10px] uppercase tracking-[0.35em] text-gold/80 md:text-xs">
-                Vidhi's Castle
-              </p>
-            </div>
-
-            <div className="absolute inset-x-4 bottom-4 md:inset-x-6 md:bottom-6">
-              <div className="rounded-[1.5rem] border border-gold/15 bg-black/28 px-4 py-4 text-center backdrop-blur-sm md:px-6 md:py-6">
-                <p className="font-heading text-[10px] uppercase tracking-[0.38em] text-gold/70 md:text-sm">
-                  Tap The Castle
-                </p>
-                <p className="mt-2 text-lg italic leading-relaxed text-bone/78 md:mt-3 md:text-2xl">
-                  Send your footsteps toward the gate.
-                </p>
-              </div>
-            </div>
-          </motion.div>
+            Vidhi's Castle
+          </motion.p>
 
           <motion.div
-            className="order-2 lg:order-1"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.9 }}
+            className="mt-4 space-y-3 md:space-y-4"
+            initial={false}
+            animate={{ opacity: 1 }}
           >
-            <p className="gold-label">An Invitation To Vidhi's Castle</p>
-            <h1 className="mt-5 font-heading text-4xl uppercase leading-[0.95] tracking-[0.12em] text-bone md:text-6xl lg:text-7xl">
+            <motion.p
+              className="font-heading text-3xl uppercase tracking-[0.18em] text-bone/92 md:text-5xl"
+              animate={{
+                opacity: started ? 0.55 : 1,
+                y: started ? -8 : 0,
+              }}
+              transition={{ duration: 0.6 }}
+            >
+              Not Everyone Is Meant To Enter
+            </motion.p>
+
+            <motion.h1
+              className="font-heading text-5xl uppercase leading-[0.92] tracking-[0.12em] text-bone md:text-7xl"
+              initial={{ opacity: 0.72 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={{ duration: 0.9 }}
+            >
               You Are
               <span className="block text-gold">Summoned</span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-xl leading-relaxed text-bone/80 md:text-3xl">
-              Step into Vidhi's Castle for a night of whispered alliances,
-              velvet shadows, and dangerous elegance.
-            </p>
+            </motion.h1>
 
-            <div className="mt-8 flex flex-wrap gap-3 text-sm uppercase tracking-[0.24em] text-gold/85 md:mt-10 md:gap-4 md:text-lg md:tracking-[0.28em]">
-              <span>May 9, 2026</span>
-              <span className="text-gold/35">|</span>
-              <span>6:30 PM</span>
-              <span className="text-gold/35">|</span>
-              <span>Bangalore</span>
-            </div>
+            <motion.p
+              className="max-w-2xl text-xl leading-relaxed text-bone/82 md:text-3xl"
+              animate={{
+                opacity: started ? 1 : 0.86,
+                y: started ? 0 : 6,
+              }}
+              transition={{ duration: 0.8, delay: started ? 0.15 : 0 }}
+            >
+              Follow the path to Vidhi's Castle. Every step brings you closer
+              to a night of whispered alliances, velvet shadows, and dangerous
+              elegance.
+            </motion.p>
           </motion.div>
-        </div>
+
+          <motion.div
+            className="mt-8 inline-flex rounded-full border border-gold/25 bg-black/30 px-5 py-3 backdrop-blur-sm md:mt-10"
+            animate={{
+              opacity: started ? 0.72 : 1,
+              scale: started ? 0.98 : 1,
+            }}
+          >
+            <p className="font-heading text-[11px] uppercase tracking-[0.34em] text-gold/82 md:text-sm">
+              Tap anywhere to send footsteps toward the gate
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-8 flex flex-wrap gap-3 text-sm uppercase tracking-[0.24em] text-gold/90 md:gap-4 md:text-lg md:tracking-[0.28em]"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{
+              opacity: started ? 1 : 0.84,
+              y: 0,
+            }}
+            transition={{ duration: 0.8, delay: started ? 0.25 : 0.1 }}
+          >
+            <span>May 9, 2026</span>
+            <span className="text-gold/35">|</span>
+            <span>6:30 PM</span>
+            <span className="text-gold/35">|</span>
+            <span>Bangalore</span>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

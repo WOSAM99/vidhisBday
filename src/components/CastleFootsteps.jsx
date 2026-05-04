@@ -22,7 +22,12 @@ function createTrail(startX, startY, targetX, targetY) {
   });
 }
 
-export default function CastleFootsteps() {
+export default function CastleFootsteps({
+  targetXRatio = 0.5,
+  targetYRatio = 0.74,
+  onTrailStart,
+  className = "",
+}) {
   const [trails, setTrails] = useState([]);
   const [pulse, setPulse] = useState(0);
   const cleanupTimers = useRef([]);
@@ -37,13 +42,14 @@ export default function CastleFootsteps() {
     const rect = event.currentTarget.getBoundingClientRect();
     const startX = event.clientX - rect.left;
     const startY = event.clientY - rect.top;
-    const targetX = rect.width * 0.5;
-    const targetY = rect.height * 0.74;
+    const targetX = rect.width * targetXRatio;
+    const targetY = rect.height * targetYRatio;
     const trailId = `${Date.now()}-${Math.random()}`;
     const steps = createTrail(startX, startY, targetX, targetY);
 
     setTrails((current) => [...current, { id: trailId, steps }]);
     setPulse(Date.now());
+    onTrailStart?.();
 
     const timer = window.setTimeout(() => {
       setTrails((current) => current.filter((trail) => trail.id !== trailId));
@@ -55,7 +61,7 @@ export default function CastleFootsteps() {
   return (
     <>
       <div
-        className="absolute inset-0 z-[3] cursor-crosshair"
+        className={`absolute inset-0 z-[3] cursor-crosshair ${className}`}
         onMouseDown={handlePointerDown}
         onTouchStart={(event) => {
           const touch = event.touches[0];
@@ -73,7 +79,8 @@ export default function CastleFootsteps() {
 
       <motion.div
         key={pulse}
-        className="pointer-events-none absolute left-1/2 top-[73%] z-[2] h-24 w-24 -translate-x-1/2 rounded-full bg-gold/12 blur-2xl"
+        className="pointer-events-none absolute z-[2] h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/12 blur-2xl"
+        style={{ left: `${targetXRatio * 100}%`, top: `${targetYRatio * 100}%` }}
         initial={{ opacity: 0, scale: 0.6 }}
         animate={{ opacity: [0, 0.35, 0], scale: [0.6, 1.2, 1.4] }}
         transition={{ duration: 1.1, ease: "easeOut" }}
