@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import castleGateVideo from "../assets/Camera_moves_through_castle_gate_202605051840.mp4";
 import castleBridgeMobile from "../assets/castle-bridge-mobile.png";
 import castleBg from "../assets/vidhis-castle-bg.png";
 import goldenFootsteps from "../assets/golden-footsteps.png";
@@ -150,7 +151,18 @@ function CastlePathScene({ onDone }) {
   const [holding, setHolding] = useState(false);
   const [progress, setProgress] = useState(0);
   const [opened, setOpened] = useState(false);
+  const [showGateVideo, setShowGateVideo] = useState(false);
   const completedRef = useRef(false);
+  const transitionDoneRef = useRef(false);
+
+  const finishTransition = () => {
+    if (transitionDoneRef.current) {
+      return;
+    }
+
+    transitionDoneRef.current = true;
+    onDone();
+  };
 
   useEffect(() => {
     let frameId;
@@ -174,8 +186,10 @@ function CastlePathScene({ onDone }) {
 
         if (next >= 100) {
           completedRef.current = true;
+          setHolding(false);
           setOpened(true);
-          window.setTimeout(onDone, 1700);
+          window.setTimeout(() => setShowGateVideo(true), 700);
+          window.setTimeout(finishTransition, 9000);
         }
 
         return next;
@@ -223,6 +237,12 @@ function CastlePathScene({ onDone }) {
         <ScenicPathBackdrop progress={progress} />
 
         <GateOpenEffect opened={opened} progress={progress} />
+
+        <AnimatePresence>
+          {showGateVideo && (
+            <GateTransitionVideo key="gate-video" onComplete={finishTransition} />
+          )}
+        </AnimatePresence>
 
         {footstepPath.map((step) => {
           const age = progress - step.threshold;
@@ -365,6 +385,50 @@ function GateOpenEffect({ opened, progress }) {
         transition={{ duration: 1.1, ease: "easeOut" }}
       />
     </div>
+  );
+}
+
+function GateTransitionVideo({ onComplete }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }, []);
+
+  return (
+    <motion.div
+      className="pointer-events-none absolute inset-0 z-40 overflow-hidden bg-black"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+    >
+      <video
+        ref={videoRef}
+        src={castleGateVideo}
+        className="h-full w-full object-cover"
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        onEnded={onComplete}
+        onContextMenu={(event) => event.preventDefault()}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),transparent_42%,rgba(0,0,0,0.34)_100%)]" />
+      <motion.div
+        className="absolute inset-0 bg-white"
+        initial={{ opacity: 0.38 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+      />
+    </motion.div>
   );
 }
 
