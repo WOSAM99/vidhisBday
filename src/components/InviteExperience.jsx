@@ -4,7 +4,7 @@ import castleBridgeMobile from "../assets/castle-bridge-mobile.png";
 import castleBg from "../assets/vidhis-castle-bg.png";
 import goldenFootsteps from "../assets/golden-footsteps.png";
 
-const LOCATION_URL = "https://maps.google.com/?q=Bangalore";
+const LOCATION_URL = " https://maps.google.com?q=Svamitva%20Terravana,%20off%20Kanakapura%20Main%20Road,%20Pipeline%20Rd,%20Bengaluru,%20Ravugodlu,%20Karnataka%20560116&ftid=0x3bae43ecce40b8f5:0xc1c4b88234a924b2&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,94286869&g_st=iw";
 const EVENT_DATE = new Date("2026-05-09T18:30:00+05:30");
 
 const scenes = [
@@ -19,20 +19,19 @@ const scenes = [
 ];
 
 const storyLines = [
-  "Within Vidhis castle not every smile is loyal",
-  "among you hide traitors..",
-  "trust will be tested.",
-  "every glance may conceal a scheme",
-  "and only the bold will dine by candlelight",
+  "Within Vidhi's Castle, not every smile is loyal...",
+  "Among you hide traitors...",
+  "Trust will be tested...",
+  "Every glance may conceal a scheme...",
+  "And only the bold will dine by candlelight.",
 ];
 
 const footstepPath = [
-  { left: "50%", bottom: "9%", rotate: -4, threshold: 8, scale: 1.24 },
-  { left: "52%", bottom: "20%", rotate: 3, threshold: 22, scale: 1.02 },
-  { left: "49%", bottom: "31%", rotate: -3, threshold: 38, scale: 0.84 },
-  { left: "51%", bottom: "42%", rotate: 2, threshold: 54, scale: 0.68 },
-  { left: "49.5%", bottom: "53%", rotate: -2, threshold: 70, scale: 0.54 },
-  { left: "50.5%", bottom: "64%", rotate: 1, threshold: 86, scale: 0.42 },
+  { left: "50%", bottom: "10%", rotate: -4, threshold: 10, scale: 1.24 },
+  { left: "51.5%", bottom: "23%", rotate: 3, threshold: 30, scale: 0.98 },
+  { left: "49.5%", bottom: "36%", rotate: -3, threshold: 50, scale: 0.76 },
+  { left: "50.8%", bottom: "50%", rotate: 2, threshold: 70, scale: 0.57 },
+  { left: "50%", bottom: "64%", rotate: -1, threshold: 88, scale: 0.42 },
 ];
 
 function getTimeLeft() {
@@ -263,7 +262,7 @@ function CastlePathScene({ onDone }) {
           onPointerDown={startHolding}
           onPointerUp={() => setHolding(false)}
           onPointerLeave={() => setHolding(false)}
-          className="absolute bottom-[5%] left-1/2 z-30 flex w-[min(22rem,84vw)] -translate-x-1/2 items-center gap-4 rounded-lg border border-gold/35 bg-black/60 px-5 py-4 text-left shadow-glow backdrop-blur-md outline-none transition hover:border-gold/70 focus:border-gold md:left-[18%] md:w-[21rem]"
+          className="absolute bottom-[5.5%] left-1/2 z-30 flex h-36 w-36 -translate-x-1/2 select-none items-center justify-center rounded-full border border-gold/40 bg-black/62 p-3 text-center shadow-glow backdrop-blur-md outline-none transition [touch-action:none] [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hover:border-gold/70 focus:border-gold md:h-40 md:w-40"
           initial={{ opacity: 0, y: 20, scale: 0.96 }}
           animate={{
             opacity: opened ? 0 : 1,
@@ -276,21 +275,24 @@ function CastlePathScene({ onDone }) {
             scale: { duration: holding ? 0.18 : 1.3, repeat: holding ? 0 : Infinity },
           }}
         >
-          <div className="min-w-0 flex-1 text-center">
+          <div
+            className="absolute inset-[-7px] rounded-full"
+            style={{
+              background: `conic-gradient(#C6A85B ${progress * 3.6}deg, rgba(198,168,91,0.12) 0deg)`,
+            }}
+          />
+          <div className="absolute inset-[7px] rounded-full bg-black/82" />
+          <div className="relative z-10 flex h-full w-full flex-col items-center justify-center rounded-full px-3">
             <motion.p
-              className="font-heading text-xs uppercase leading-relaxed tracking-[0.14em] text-gold md:text-sm md:tracking-[0.22em]"
+              className="font-heading text-[0.68rem] uppercase leading-relaxed tracking-[0.12em] text-gold md:text-xs md:tracking-[0.16em]"
               animate={{ opacity: holding ? 1 : [0.45, 1, 0.45] }}
               transition={{ duration: 0.95, repeat: holding ? 0 : Infinity }}
             >
-              Tap & Hold to Walk Forward
+              Tap & Hold
             </motion.p>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-[#8f2232] via-gold to-[#f7e6ae]"
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.08, ease: "linear" }}
-              />
-            </div>
+            <p className="mt-1 font-heading text-[0.58rem] uppercase tracking-[0.1em] text-bone/62">
+              Walk Forward
+            </p>
           </div>
         </motion.button>
 
@@ -384,7 +386,7 @@ function EventScene({ onNext }) {
 
 function StoryScene({ onNext }) {
   return (
-    <ContentScene eyebrow="Within Vidhi's Castle" onNext={onNext} cta="Accept the risk">
+    <ContentScene eyebrow="THE STORY" onNext={onNext} cta="Accept the risk">
       <div className="space-y-4 md:space-y-5">
         {storyLines.map((line, index) => (
           <motion.p
@@ -570,10 +572,10 @@ function LocationScene() {
   return (
     <ContentScene eyebrow="Location Reveal" cta={null}>
       <h2 className="font-heading text-5xl uppercase leading-tight tracking-[0.14em] text-gold md:text-7xl">
-        Bangalore
+        Terravana Bangalore
       </h2>
       <p className="mx-auto mt-6 max-w-2xl text-3xl italic leading-relaxed text-bone/78 md:text-5xl">
-        The castle gates point the way.
+        
       </p>
       <a
         href={LOCATION_URL}
