@@ -1,9 +1,9 @@
-import MainSite from "./components/MainSite";
+import InviteExperience from "./components/InviteExperience";
 
 function App() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-obsidian text-bone">
-      <MainSite />
+    <div className="relative h-dvh overflow-hidden bg-obsidian text-bone">
+      <InviteExperience />
     </div>
   );
 }
