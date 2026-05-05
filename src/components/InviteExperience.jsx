@@ -31,7 +31,7 @@ const footstepPath = [
   { left: "51.5%", bottom: "23%", rotate: 3, threshold: 30, scale: 0.98 },
   { left: "49.5%", bottom: "36%", rotate: -3, threshold: 50, scale: 0.76 },
   { left: "50.8%", bottom: "50%", rotate: 2, threshold: 70, scale: 0.57 },
-  { left: "50%", bottom: "64%", rotate: -1, threshold: 88, scale: 0.42 },
+  { left: "50%", bottom: "58%", rotate: -1, threshold: 88, scale: 0.46 },
 ];
 
 function getTimeLeft() {
@@ -581,7 +581,7 @@ function RsvpScene({ onNext }) {
 function LocationScene() {
   return (
     <ContentScene eyebrow="Location Reveal" cta={null}>
-      <h2 className="font-heading text-5xl uppercase leading-tight tracking-[0.14em] text-gold md:text-7xl">
+      <h2 className="font-heading text-4xl uppercase leading-tight tracking-[0.14em] text-gold md:text-5xl">
         Terravana Bangalore
       </h2>
       <p className="mx-auto mt-6 max-w-2xl text-3xl italic leading-relaxed text-bone/78 md:text-5xl">
