@@ -17,8 +17,8 @@ body {
 
 #root {
   height: 100dvh;
-  overflow: hidden;
-}
+  overflow:  hidden;
+}    
 
 ::selection {
   background: rgba(198, 168, 91, 0.35);
