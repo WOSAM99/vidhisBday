@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import castleGateVideo from "../assets/Camera_moves_through_castle_gate_202605051840.mp4";
 import castleBridgeMobile from "../assets/castle-bridge-mobile.png";
 import castleBg from "../assets/vidhis-castle-bg.png";
 import goldenFootsteps from "../assets/golden-footsteps.png";
+import suspenseMusic from "../assets/[Suspense Music No Copyright]Suspense Background Music No Copyright - Mystery Music No Copyright.mp3";
 
 const LOCATION_URL = " https://maps.google.com?q=Svamitva%20Terravana,%20off%20Kanakapura%20Main%20Road,%20Pipeline%20Rd,%20Bengaluru,%20Ravugodlu,%20Karnataka%20560116&ftid=0x3bae43ecce40b8f5:0xc1c4b88234a924b2&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,94286869&g_st=iw";
 const EVENT_DATE = new Date("2026-05-09T18:30:00+05:30");
@@ -151,18 +151,9 @@ function CastlePathScene({ onDone }) {
   const [holding, setHolding] = useState(false);
   const [progress, setProgress] = useState(0);
   const [opened, setOpened] = useState(false);
-  const [showGateVideo, setShowGateVideo] = useState(false);
   const completedRef = useRef(false);
-  const transitionDoneRef = useRef(false);
-
-  const finishTransition = () => {
-    if (transitionDoneRef.current) {
-      return;
-    }
-
-    transitionDoneRef.current = true;
-    onDone();
-  };
+  const audioRef = useRef(null);
+  const audioStartedRef = useRef(false);
 
   useEffect(() => {
     let frameId;
@@ -188,8 +179,7 @@ function CastlePathScene({ onDone }) {
           completedRef.current = true;
           setHolding(false);
           setOpened(true);
-          window.setTimeout(() => setShowGateVideo(true), 700);
-          window.setTimeout(finishTransition, 9000);
+          window.setTimeout(onDone, 1700);
         }
 
         return next;
@@ -224,6 +214,14 @@ function CastlePathScene({ onDone }) {
       return;
     }
 
+    if (!audioStartedRef.current && audioRef.current) {
+      audioStartedRef.current = true;
+      audioRef.current.volume = 0.36;
+      audioRef.current.play().catch(() => {
+        audioStartedRef.current = false;
+      });
+    }
+
     setHolding(true);
   };
 
@@ -236,13 +234,9 @@ function CastlePathScene({ onDone }) {
       >
         <ScenicPathBackdrop progress={progress} />
 
-        <GateOpenEffect opened={opened} progress={progress} />
+        <audio ref={audioRef} src={suspenseMusic} loop preload="auto" />
 
-        <AnimatePresence>
-          {showGateVideo && (
-            <GateTransitionVideo key="gate-video" onComplete={finishTransition} />
-          )}
-        </AnimatePresence>
+        <GateOpenEffect opened={opened} progress={progress} />
 
         {footstepPath.map((step) => {
           const age = progress - step.threshold;
@@ -385,50 +379,6 @@ function GateOpenEffect({ opened, progress }) {
         transition={{ duration: 1.1, ease: "easeOut" }}
       />
     </div>
-  );
-}
-
-function GateTransitionVideo({ onComplete }) {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-
-    if (!video) {
-      return;
-    }
-
-    video.currentTime = 0;
-    video.play().catch(() => {});
-  }, []);
-
-  return (
-    <motion.div
-      className="pointer-events-none absolute inset-0 z-40 overflow-hidden bg-black"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-    >
-      <video
-        ref={videoRef}
-        src={castleGateVideo}
-        className="h-full w-full object-cover"
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        onEnded={onComplete}
-        onContextMenu={(event) => event.preventDefault()}
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.08),transparent_42%,rgba(0,0,0,0.34)_100%)]" />
-      <motion.div
-        className="absolute inset-0 bg-white"
-        initial={{ opacity: 0.38 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.9, ease: "easeOut" }}
-      />
-    </motion.div>
   );
 }
 
