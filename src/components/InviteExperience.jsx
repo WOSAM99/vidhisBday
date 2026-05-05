@@ -53,17 +53,42 @@ function getTimeLeft() {
 export default function InviteExperience() {
   const [sceneIndex, setSceneIndex] = useState(0);
   const scene = scenes[sceneIndex];
+  const audioRef = useRef(null);
+  const audioStartedRef = useRef(false);
 
   const goNext = () => {
     setSceneIndex((current) => Math.min(current + 1, scenes.length - 1));
   };
 
+  const startMusic = () => {
+    if (audioStartedRef.current || !audioRef.current) {
+      return;
+    }
+
+    audioStartedRef.current = true;
+    audioRef.current.volume = 0.36;
+    audioRef.current.play().catch(() => {
+      audioStartedRef.current = false;
+    });
+  };
+
+  useEffect(() => {
+    startMusic();
+  }, []);
+
   return (
-    <main className="relative h-dvh overflow-hidden bg-obsidian text-bone">
+    <main
+      className="relative h-dvh overflow-hidden bg-obsidian text-bone"
+      onPointerDown={startMusic}
+      onKeyDown={startMusic}
+    >
+      <audio ref={audioRef} src={suspenseMusic} loop preload="auto" />
       {scene !== "path" && <Background />}
 
       <AnimatePresence mode="wait">
-        {scene === "summons" && <SummonsScene key="summons" onDone={goNext} />}
+        {scene === "summons" && (
+          <SummonsScene key="summons" onDone={goNext} onStartMusic={startMusic} />
+        )}
         {scene === "path" && <CastlePathScene key="path" onDone={goNext} />}
         {scene === "event" && <EventScene key="event" onNext={goNext} />}
         {scene === "story" && <StoryScene key="story" onNext={goNext} />}
@@ -108,9 +133,11 @@ function SceneShell({ children, className = "" }) {
   );
 }
 
-function SummonsScene({ onDone }) {
+function SummonsScene({ onDone, onStartMusic }) {
   const message = "You have been summoned to Vidhi's Castle";
   const [visibleCount, setVisibleCount] = useState(0);
+  const [entering, setEntering] = useState(false);
+  const isReady = visibleCount >= message.length;
 
   useEffect(() => {
     if (visibleCount < message.length) {
@@ -120,10 +147,17 @@ function SummonsScene({ onDone }) {
 
       return () => window.clearTimeout(timer);
     }
+  }, [message.length, visibleCount]);
 
-    const doneTimer = window.setTimeout(onDone, 1450);
-    return () => window.clearTimeout(doneTimer);
-  }, [message.length, onDone, visibleCount]);
+  const enterCastle = () => {
+    if (!isReady || entering) {
+      return;
+    }
+
+    setEntering(true);
+    onStartMusic();
+    window.setTimeout(onDone, 260);
+  };
 
   return (
     <SceneShell>
@@ -142,6 +176,28 @@ function SummonsScene({ onDone }) {
             transition={{ duration: 0.8, repeat: Infinity }}
           />
         </h1>
+        <motion.button
+          type="button"
+          onClick={enterCastle}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            enterCastle();
+          }}
+          className="no-mobile-callout mt-8 rounded-full border border-gold/35 bg-black/35 px-5 py-3 font-heading text-[0.68rem] uppercase tracking-[0.24em] text-gold/86 backdrop-blur-sm [-webkit-tap-highlight-color:transparent]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: isReady ? [0.55, 1, 0.55] : 0,
+            y: isReady ? 0 : 10,
+            scale: entering ? 0.96 : 1,
+          }}
+          transition={{
+            opacity: { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
+            y: { duration: 0.7, delay: 0.5 },
+            scale: { duration: 0.2 },
+          }}
+        >
+          Enter the Castle
+        </motion.button>
       </div>
     </SceneShell>
   );
@@ -152,8 +208,6 @@ function CastlePathScene({ onDone }) {
   const [progress, setProgress] = useState(0);
   const [opened, setOpened] = useState(false);
   const completedRef = useRef(false);
-  const audioRef = useRef(null);
-  const audioStartedRef = useRef(false);
 
   useEffect(() => {
     let frameId;
@@ -214,14 +268,6 @@ function CastlePathScene({ onDone }) {
       return;
     }
 
-    if (!audioStartedRef.current && audioRef.current) {
-      audioStartedRef.current = true;
-      audioRef.current.volume = 0.36;
-      audioRef.current.play().catch(() => {
-        audioStartedRef.current = false;
-      });
-    }
-
     setHolding(true);
   };
 
@@ -233,8 +279,6 @@ function CastlePathScene({ onDone }) {
         onDragStart={(event) => event.preventDefault()}
       >
         <ScenicPathBackdrop progress={progress} />
-
-        <audio ref={audioRef} src={suspenseMusic} loop preload="auto" />
 
         <GateOpenEffect opened={opened} progress={progress} />
 
