@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import castleBridgeMobile from "../assets/castle-bridge-mobile.png";
 import castleBg from "../assets/vidhis-castle-bg.png";
+import goldenFootsteps from "../assets/golden-footsteps.png";
 
 const LOCATION_URL = "https://maps.google.com/?q=Bangalore";
 const EVENT_DATE = new Date("2026-05-09T18:30:00+05:30");
@@ -17,30 +19,20 @@ const scenes = [
 ];
 
 const storyLines = [
-  "Within Vidhi's Castle, not every smile is loyal.",
-  "Among you hide 3 Traitors.",
-  "Trust will be tested. Lies will be told.",
-  "Every glance may conceal a scheme.",
-  "Only the bold will dine by candlelight.",
+  "Within Vidhis castle not every smile is loyal",
+  "among you hide traitors..",
+  "trust will be tested.",
+  "every glance may conceal a scheme",
+  "and only the bold will dine by candlelight",
 ];
 
 const footstepPath = [
-  { left: "16%", bottom: "11%", rotate: -18, threshold: 8 },
-  { left: "27%", bottom: "21%", rotate: 13, threshold: 22 },
-  { left: "38%", bottom: "32%", rotate: -14, threshold: 38 },
-  { left: "50%", bottom: "44%", rotate: 12, threshold: 54 },
-  { left: "62%", bottom: "57%", rotate: -12, threshold: 70 },
-  { left: "73%", bottom: "70%", rotate: 8, threshold: 86 },
-];
-
-const pathCheckpoints = [
-  "Hold to begin the passage.",
-  "The summons has been accepted.",
-  "The passage remembers every step.",
-  "Not every guest arrives loyal.",
-  "The traitors are already inside.",
-  "The gate is listening.",
-  "The castle opens.",
+  { left: "50%", bottom: "9%", rotate: -4, threshold: 8, scale: 1.24 },
+  { left: "52%", bottom: "20%", rotate: 3, threshold: 22, scale: 1.02 },
+  { left: "49%", bottom: "31%", rotate: -3, threshold: 38, scale: 0.84 },
+  { left: "51%", bottom: "42%", rotate: 2, threshold: 54, scale: 0.68 },
+  { left: "49.5%", bottom: "53%", rotate: -2, threshold: 70, scale: 0.54 },
+  { left: "50.5%", bottom: "64%", rotate: 1, threshold: 86, scale: 0.42 },
 ];
 
 function getTimeLeft() {
@@ -124,7 +116,7 @@ function SummonsScene({ onDone }) {
     if (visibleCount < message.length) {
       const timer = window.setTimeout(() => {
         setVisibleCount((count) => count + 1);
-      }, 62);
+      }, 92);
 
       return () => window.clearTimeout(timer);
     }
@@ -220,44 +212,51 @@ function CastlePathScene({ onDone }) {
     setHolding(true);
   };
 
-  const activeCheckpoint = Math.min(
-    pathCheckpoints.length - 1,
-    Math.floor(progress / (100 / (pathCheckpoints.length - 1))),
-  );
-
   return (
     <SceneShell className="items-stretch p-0">
-      <div className="relative h-full w-full overflow-hidden bg-[radial-gradient(circle_at_72%_14%,rgba(198,168,91,0.18),transparent_24%),linear-gradient(180deg,#111118_0%,#0b0b0f_58%,#050507_100%)]">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.24)_55%,rgba(0,0,0,0.78)_100%)]" />
-        <motion.div
-          className="absolute left-1/2 top-3 z-20 w-[78vw] max-w-[34rem] -translate-x-1/2 md:top-2 md:w-[35rem]"
-          initial={{ opacity: 0, y: -18, scale: 0.94 }}
-          animate={{ opacity: 1, y: 0, scale: opened ? 1.04 : 1 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-        >
-          <CastleGateIllustration opened={opened} />
-        </motion.div>
+      <div className="relative h-full w-full overflow-hidden bg-[#06070c]">
+        <ScenicPathBackdrop progress={progress} />
 
-        <Passage progress={progress} />
+        <GateOpenEffect opened={opened} progress={progress} />
 
-        {footstepPath.map((step, index) => (
-          <motion.div
-            key={`${step.left}-${step.bottom}`}
-            className="absolute z-20"
-            style={{ left: step.left, bottom: step.bottom }}
-            initial={{ opacity: 0, scale: 0.5, rotate: step.rotate }}
-            animate={{
-              opacity: progress >= step.threshold ? 1 : 0,
-              scale: progress >= step.threshold ? [0.55, 1.18, 1] : 0.55,
-            }}
-            transition={{
-              duration: 0.45,
-              ease: "easeOut",
-            }}
-          >
-            <Footprint />
-          </motion.div>
-        ))}
+        {footstepPath.map((step) => {
+          const age = progress - step.threshold;
+          const isVisible = age >= 0;
+          const opacity = isVisible ? Math.max(0.18, 1 - age / 34) : 0;
+
+          return (
+            <motion.div
+              key={`${step.left}-${step.bottom}`}
+              className="absolute z-20"
+              style={{ left: step.left, bottom: step.bottom }}
+              initial={{
+                opacity: 0,
+                scale: 0.5,
+                rotate: step.rotate,
+                x: "-50%",
+                y: "50%",
+              }}
+              animate={{
+                opacity,
+                scale: isVisible
+                ? [
+                    step.scale * 0.72,
+                    step.scale * 1.08,
+                    step.scale * (1 - Math.min(age, 24) / 160),
+                  ]
+                : step.scale * 0.55,
+                x: "-50%",
+                y: "50%",
+              }}
+              transition={{
+                duration: 0.45,
+                ease: "easeOut",
+              }}
+            >
+              <Footprint />
+            </motion.div>
+          );
+        })}
 
         <motion.button
           type="button"
@@ -277,14 +276,13 @@ function CastlePathScene({ onDone }) {
             scale: { duration: holding ? 0.18 : 1.3, repeat: holding ? 0 : Infinity },
           }}
         >
-          <Footprint large />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 text-center">
             <motion.p
-              className="font-heading text-sm uppercase tracking-[0.28em] text-gold md:text-base"
+              className="font-heading text-xs uppercase leading-relaxed tracking-[0.14em] text-gold md:text-sm md:tracking-[0.22em]"
               animate={{ opacity: holding ? 1 : [0.45, 1, 0.45] }}
               transition={{ duration: 0.95, repeat: holding ? 0 : Infinity }}
             >
-              Hold to walk
+              Tap & Hold to Walk Forward
             </motion.p>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
               <motion.div
@@ -296,83 +294,63 @@ function CastlePathScene({ onDone }) {
           </div>
         </motion.button>
 
-        <div className="absolute bottom-[22%] left-1/2 z-30 w-[min(34rem,88vw)] -translate-x-1/2 text-center md:bottom-12 md:left-auto md:right-8 md:w-[29rem] md:translate-x-0 md:text-right">
-          <motion.p
-            key={activeCheckpoint}
-            className="font-heading text-lg uppercase leading-relaxed tracking-[0.16em] text-bone/88 md:text-2xl"
-            initial={{ opacity: 0, y: 12, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.45 }}
-          >
-            {pathCheckpoints[activeCheckpoint]}
-          </motion.p>
-          <motion.p
-            className="mt-4 font-heading text-sm uppercase leading-relaxed tracking-[0.18em] text-gold/84 md:text-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: progress > 44 ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Wear white. Betrayal looks better on a clean canvas.
-          </motion.p>
-        </div>
       </div>
     </SceneShell>
   );
 }
 
-function Passage({ progress }) {
-  const dashOffset = 1 - progress / 100;
-
+function ScenicPathBackdrop({ progress }) {
   return (
     <div className="pointer-events-none absolute inset-0">
-      <div className="absolute inset-x-0 bottom-0 h-[76%] bg-[radial-gradient(ellipse_at_bottom,rgba(198,168,91,0.16),transparent_56%)]" />
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="passageFill" x1="22" y1="100" x2="72" y2="22">
-            <stop offset="0%" stopColor="rgba(198,168,91,0.34)" />
-            <stop offset="48%" stopColor="rgba(255,255,255,0.1)" />
-            <stop offset="100%" stopColor="rgba(198,168,91,0.04)" />
-          </linearGradient>
-          <linearGradient id="passageStroke" x1="12" y1="94" x2="74" y2="19">
-            <stop offset="0%" stopColor="#8f2232" />
-            <stop offset="52%" stopColor="#c6a85b" />
-            <stop offset="100%" stopColor="#f7e6ae" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M7 100 C24 78 41 60 55 43 C63 33 68 25 73 17 L84 17 C78 33 68 48 54 65 C44 77 34 88 25 100 Z"
-          fill="url(#passageFill)"
-        />
-        <path
-          d="M12 96 C28 77 43 58 56 42 C64 31 69 24 75 17"
-          fill="none"
-          stroke="rgba(198,168,91,0.22)"
-          strokeLinecap="round"
-          strokeWidth="1.2"
-          vectorEffect="non-scaling-stroke"
-        />
-        <motion.path
-          d="M12 96 C28 77 43 58 56 42 C64 31 69 24 75 17"
-          fill="none"
-          pathLength="1"
-          stroke="url(#passageStroke)"
-          strokeDasharray="1"
-          strokeLinecap="round"
-          strokeWidth="2.4"
-          vectorEffect="non-scaling-stroke"
-          animate={{ strokeDashoffset: dashOffset }}
-          transition={{ duration: 0.12, ease: "linear" }}
-        />
-      </svg>
       <motion.div
-        className="absolute bottom-[6%] left-[20%] h-[70%] w-[48%] origin-bottom rotate-[-27deg] bg-gradient-to-t from-gold/18 via-gold/8 to-transparent blur-xl"
-        animate={{ opacity: [0.18, 0.38, 0.18] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${castleBridgeMobile})` }}
+        animate={{ scale: 1.01 + progress * 0.00042 }}
+        transition={{ duration: 0.2, ease: "linear" }}
+      />
+      <motion.div
+        className="absolute left-[-25%] top-[40%] h-28 w-[150%] bg-[radial-gradient(ellipse_at_center,rgba(230,235,242,0.16),transparent_64%)] blur-2xl"
+        animate={{ x: ["-7%", "7%", "-7%"], opacity: [0.18, 0.38, 0.18] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute left-[-40%] bottom-[16%] h-40 w-[180%] bg-[radial-gradient(ellipse_at_center,rgba(230,235,242,0.14),transparent_62%)] blur-3xl"
+        animate={{ x: ["8%", "-8%", "8%"], opacity: [0.16, 0.34, 0.16] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.08)_45%,rgba(0,0,0,0.58)_100%)]" />
+    </div>
+  );
+}
+
+function GateOpenEffect({ opened, progress }) {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10">
+      <motion.div
+        className="absolute left-[43%] top-[33.5%] h-[15%] w-[7%] origin-left rounded-t-full bg-black/78 shadow-[0_0_24px_rgba(0,0,0,0.85)]"
+        animate={{
+          x: opened ? "-5vw" : 0,
+          rotateY: opened ? -76 : 0,
+          opacity: opened ? 0.56 : progress > 90 ? 0.92 : 0,
+        }}
+        transition={{ duration: 0.95, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute left-[50%] top-[33.5%] h-[15%] w-[7%] origin-right rounded-t-full bg-black/78 shadow-[0_0_24px_rgba(0,0,0,0.85)]"
+        animate={{
+          x: opened ? "5vw" : 0,
+          rotateY: opened ? 76 : 0,
+          opacity: opened ? 0.56 : progress > 90 ? 0.92 : 0,
+        }}
+        transition={{ duration: 0.95, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute left-1/2 top-[36%] h-[15%] w-[22%] -translate-x-1/2 rounded-t-full bg-[radial-gradient(ellipse_at_center,#fff3c2,rgba(198,168,91,0.58)_42%,transparent_72%)] blur-xl"
+        animate={{
+          opacity: opened ? [0.2, 0.9, 0.62] : progress > 88 ? 0.18 : 0,
+          scale: opened ? 1.18 : 0.74,
+        }}
+        transition={{ duration: 1.1, ease: "easeOut" }}
       />
     </div>
   );
@@ -380,204 +358,14 @@ function Passage({ progress }) {
 
 function Footprint({ large = false }) {
   return (
-    <div className={`relative ${large ? "h-16 w-12" : "h-14 w-10"}`}>
-      <div className="absolute inset-[-10px] rounded-full bg-gold/16 blur-xl" />
-      <svg
-        viewBox="0 0 48 64"
-        className="relative h-full w-full drop-shadow-[0_0_12px_rgba(198,168,91,0.38)]"
-        aria-hidden="true"
-      >
-        <path
-          d="M17 5C8 9 8 23 13 34C15 38 21 38 24 35C29 30 28 14 24 8C22 5 19 4 17 5Z"
-          fill="#060608"
-          stroke="#e4c978"
-          strokeOpacity="0.82"
-          strokeWidth="2"
-        />
-        <path
-          d="M33 30C24 34 24 48 29 59C31 63 37 63 40 60C45 55 44 39 40 33C38 30 35 29 33 30Z"
-          fill="#060608"
-          stroke="#e4c978"
-          strokeOpacity="0.82"
-          strokeWidth="2"
-        />
-        <path
-          d="M15 12C12 16 12 23 15 30"
-          stroke="#c6a85b"
-          strokeOpacity="0.45"
-          strokeLinecap="round"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M31 37C28 41 28 48 31 55"
-          stroke="#c6a85b"
-          strokeOpacity="0.45"
-          strokeLinecap="round"
-          strokeWidth="1.5"
-        />
-      </svg>
+    <div className={`relative ${large ? "h-96 w-80" : "h-80 w-64"}`}>
+      <img
+        src={goldenFootsteps}
+        alt=""
+        className="h-full w-full object-contain drop-shadow-[0_0_18px_rgba(248,213,118,0.72)]"
+        draggable="false"
+      />
     </div>
-  );
-}
-
-function CastleGateIllustration({ opened }) {
-  return (
-    <svg
-      viewBox="0 0 640 430"
-      className="h-auto w-full overflow-visible"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="castleWallClean" x1="320" y1="54" x2="320" y2="390">
-          <stop offset="0%" stopColor="#3b3b46" />
-          <stop offset="100%" stopColor="#111116" />
-        </linearGradient>
-        <linearGradient id="gateLight" x1="320" y1="205" x2="320" y2="405">
-          <stop offset="0%" stopColor="#fff2bd" stopOpacity="0.98" />
-          <stop offset="56%" stopColor="#c6a85b" stopOpacity="0.72" />
-          <stop offset="100%" stopColor="#7a1d2a" stopOpacity="0.04" />
-        </linearGradient>
-        <filter id="gateGlow">
-          <feGaussianBlur stdDeviation="13" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      <motion.ellipse
-        cx="320"
-        cy="378"
-        rx="250"
-        ry="42"
-        fill="#000"
-        fillOpacity="0.52"
-        animate={{ opacity: opened ? 0.72 : 0.44, scaleX: opened ? 1.08 : 1 }}
-        transition={{ duration: 0.9 }}
-      />
-
-      <motion.path
-        d="M146 364V182H206V364H146Z"
-        fill="url(#castleWallClean)"
-        stroke="#c6a85b"
-        strokeOpacity="0.36"
-        animate={{ y: opened ? -5 : 0 }}
-        transition={{ duration: 0.8 }}
-      />
-      <motion.path
-        d="M434 364V182H494V364H434Z"
-        fill="url(#castleWallClean)"
-        stroke="#c6a85b"
-        strokeOpacity="0.36"
-        animate={{ y: opened ? -5 : 0 }}
-        transition={{ duration: 0.8 }}
-      />
-      <motion.path
-        d="M206 364V126H434V364H206Z"
-        fill="url(#castleWallClean)"
-        stroke="#c6a85b"
-        strokeOpacity="0.44"
-        animate={{ y: opened ? -3 : 0 }}
-        transition={{ duration: 0.8 }}
-      />
-
-      <path d="M120 182H232V212H120V182Z" fill="#101016" />
-      <path d="M408 182H520V212H408V182Z" fill="#101016" />
-      <path d="M184 126H456V158H184V126Z" fill="#101016" />
-
-      <path
-        d="M156 182L176 98L196 182H156Z"
-        fill="#15151b"
-        stroke="#c6a85b"
-        strokeOpacity="0.36"
-      />
-      <path
-        d="M444 182L464 98L484 182H444Z"
-        fill="#15151b"
-        stroke="#c6a85b"
-        strokeOpacity="0.36"
-      />
-      <path
-        d="M278 126L320 42L362 126H278Z"
-        fill="#15151b"
-        stroke="#c6a85b"
-        strokeOpacity="0.42"
-      />
-
-      {[180, 248, 392, 460].map((x, index) => (
-        <motion.g
-          key={x}
-          animate={{ opacity: [0.55, 1, 0.55] }}
-          transition={{
-            duration: 2.8,
-            delay: index * 0.28,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <rect x={x - 8} y="222" width="16" height="54" rx="8" fill="#c6a85b" />
-          <rect
-            x={x - 19}
-            y="210"
-            width="38"
-            height="78"
-            rx="18"
-            fill="#c6a85b"
-            fillOpacity="0.13"
-          />
-        </motion.g>
-      ))}
-
-      <motion.path
-        d="M257 364C257 284 285 219 320 219C355 219 383 284 383 364H257Z"
-        fill="url(#gateLight)"
-        filter="url(#gateGlow)"
-        initial={{ opacity: 0, scaleY: 0.8 }}
-        animate={{
-          opacity: opened ? [0.25, 0.95, 0.7] : 0.08,
-          scaleY: opened ? 1.12 : 0.9,
-        }}
-        style={{ originY: 1 }}
-        transition={{ duration: 1.1, ease: "easeOut" }}
-      />
-
-      <motion.path
-        d="M257 364C257 284 285 219 320 219V364H257Z"
-        fill="#09090d"
-        stroke="#c6a85b"
-        strokeOpacity="0.5"
-        animate={{
-          x: opened ? -28 : 0,
-          rotate: opened ? -5 : 0,
-          opacity: opened ? 0.62 : 1,
-        }}
-        transition={{ duration: 0.95, ease: "easeInOut" }}
-      />
-      <motion.path
-        d="M320 219C355 219 383 284 383 364H320V219Z"
-        fill="#09090d"
-        stroke="#c6a85b"
-        strokeOpacity="0.5"
-        animate={{
-          x: opened ? 28 : 0,
-          rotate: opened ? 5 : 0,
-          opacity: opened ? 0.62 : 1,
-        }}
-        transition={{ duration: 0.95, ease: "easeInOut" }}
-      />
-
-      <motion.path
-        d="M80 364H560V402H80V364Z"
-        fill="#07070a"
-        stroke="#c6a85b"
-        strokeOpacity="0.2"
-        animate={{ y: opened ? 3 : 0 }}
-        transition={{ duration: 0.8 }}
-      />
-    </svg>
   );
 }
 
@@ -729,11 +517,11 @@ function RsvpScene({ onNext }) {
               </div>
 
               <Field
-                label="Dietary Restrictions"
+                label="Why should I make you the traitor?"
                 name="diet"
                 value={form.diet}
                 onChange={handleChange}
-                placeholder="Tell us what to prepare"
+                placeholder="Make your case"
                 textarea
               />
 
