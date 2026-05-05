@@ -203,7 +203,9 @@ function CastlePathScene({ onDone }) {
     };
   }, []);
 
-  const startHolding = () => {
+  const startHolding = (event) => {
+    event.preventDefault();
+
     if (completedRef.current) {
       return;
     }
@@ -213,7 +215,11 @@ function CastlePathScene({ onDone }) {
 
   return (
     <SceneShell className="items-stretch p-0">
-      <div className="relative h-full w-full overflow-hidden bg-[#06070c]">
+      <div
+        className="no-mobile-callout relative h-full w-full overflow-hidden bg-[#06070c]"
+        onContextMenu={(event) => event.preventDefault()}
+        onDragStart={(event) => event.preventDefault()}
+      >
         <ScenicPathBackdrop progress={progress} />
 
         <GateOpenEffect opened={opened} progress={progress} />
@@ -260,8 +266,12 @@ function CastlePathScene({ onDone }) {
         <motion.button
           type="button"
           onPointerDown={startHolding}
-          onPointerUp={() => setHolding(false)}
+          onPointerUp={(event) => {
+            event.preventDefault();
+            setHolding(false);
+          }}
           onPointerLeave={() => setHolding(false)}
+          onContextMenu={(event) => event.preventDefault()}
           className="absolute bottom-[5.5%] left-1/2 z-30 flex h-36 w-36 -translate-x-1/2 select-none items-center justify-center rounded-full border border-gold/40 bg-black/62 p-3 text-center shadow-glow backdrop-blur-md outline-none transition [touch-action:none] [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] hover:border-gold/70 focus:border-gold md:h-40 md:w-40"
           initial={{ opacity: 0, y: 20, scale: 0.96 }}
           animate={{
